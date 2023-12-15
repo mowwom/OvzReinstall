@@ -1,23 +1,23 @@
 #!/bin/bash
-# Reinstall Any OpenVZ/LXC VPS to Debian/CentOS/Alpine
-# Author: Lloyd@nodeseek.com
+# Reinstall Any OpenVZ/LXC VPS to Ubuntu/Debian/CentOS/Alpine
+# Author: https://github.com/mowwom
 # WARNING: A fresh system will be installed and all old data will be wiped.
-# License: GPLv3; Partly based on https://gist.github.com/trimsj/c1fefd650b5f49ceb8f3efc1b6a1404d
+# License: GPLv3; Partly based on https://gist.github.com/trimsj/c1fefd650b5f49ceb8f3efc1b6a1404d; Modify from https://github.com/LloydAsp/OsMutation
 
 function print_help(){
     echo -ne "\e[1;32m"
     cat <<- EOF
                                                                                      
-		 ██████╗ ███████╗███╗   ███╗██╗   ██╗████████╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
-		██╔═══██╗██╔════╝████╗ ████║██║   ██║╚══██╔══╝██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
-		██║   ██║███████╗██╔████╔██║██║   ██║   ██║   ███████║   ██║   ██║██║   ██║██╔██╗ ██║
-		██║   ██║╚════██║██║╚██╔╝██║██║   ██║   ██║   ██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
-		╚██████╔╝███████║██║ ╚═╝ ██║╚██████╔╝   ██║   ██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
-		 ╚═════╝ ╚══════╝╚═╝     ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+	   ██████╗ ██╗   ██╗███████╗██████╗ ███████╗██╗███╗   ██╗███████╗████████╗ █████╗ ██╗     ██╗     
+	  ██╔═══██╗██║   ██║╚══███╔╝██╔══██╗██╔════╝██║████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██║     ██║     
+	  ██║   ██║██║   ██║  ███╔╝ ██████╔╝█████╗  ██║██╔██╗ ██║███████╗   ██║   ███████║██║     ██║     
+	  ██║   ██║╚██╗ ██╔╝ ███╔╝  ██╔══██╗██╔══╝  ██║██║╚██╗██║╚════██║   ██║   ██╔══██║██║     ██║     
+	  ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║███████╗██║██║ ╚████║███████║   ██║   ██║  ██║███████╗███████╗
+	   ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝╚══════╝╚═╝╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚══════╝
                                                                                      
-		Reinstall Any OpenVZ/LXC VPS to Debian/CentOS/Alpine;
+		Reinstall Any OpenVZ/LXC VPS to Ubuntu/Debian/CentOS/Alpine;
 		[warning] A fresh system will be installed and all old data will be wiped!
-		Author: Lloyd@nodeseek.com
+		Author: https://github.com/mowwom
 	EOF
     echo -ne "\e[m"
 }
@@ -56,16 +56,16 @@ function install(){
 }
 
 function read_lxc_template(){
-    last_lxc_version=$(curl -Ls "https://api.github.com/repos/LloydAsp/OsMutation/releases/latest" | grep "LXC" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    last_lxc_version=$(curl -Ls "https://api.github.com/repos/mowwom/OvzReinstall/releases/latest" | grep "LXC" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     if [[ -n $last_lxc_version ]]; then
-        image_list=$(curl -Ls "https://api.github.com/repos/LloydAsp/OsMutation/releases/latest" | grep "LXC" | grep '"browser_download_url":' | sed -E 's/.*"([^"]+)".*/\1/')
+        image_list=$(curl -Ls "https://api.github.com/repos/mowwom/OvzReinstall/releases/latest" | grep "LXC" | grep '"browser_download_url":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [ "$(uname -m)" == "aarch64" ] ; then
             image_list="$(echo "$image_list" | grep arm64)"
         else
             image_list="$(echo "$image_list" | grep -v arm64)"
         fi
 
-        os_list=$(echo "$image_list" | sed "s/https\:\/\/github.com\/LloydAsp\/OsMutation\/releases\/download\/${last_lxc_version}\///g" | sed "s/\.tar\.gz//g")
+        os_list=$(echo "$image_list" | sed "s/https\:\/\/github.com\/mowwom\/OvzReinstall\/releases\/download\/${last_lxc_version}\///g" | sed "s/\.tar\.gz//g")
         echo "$os_list" | nl
 
         while [ -z "${os_index##*[!0-9]*}" ]; do
@@ -78,7 +78,7 @@ function read_lxc_template(){
         server=http://images.linuxcontainers.org
         path=$(wget -qO- ${server}/meta/1.0/index-system | \
             grep -v edge | grep default | \
-            awk '-F;' '(( $1=="debian" || $1=="centos" || $1=="alpine") && ( $3=="amd64" || $3=="i386")) {print $NF}')
+            awk '-F;' '(( $1=="ubuntu" || $1=="debian" || $1=="centos" || $1=="alpine") && ( $3=="amd64" || $3=="i386")) {print $NF}')
 
         if [ "$(uname -m)" == "aarch64" ] ; then
             path="$(echo $path | grep arm64)"
@@ -102,7 +102,7 @@ function read_lxc_template(){
 
 function read_openvz_template(){
     releasetag="v0.0.1"
-    os_list=$(wget -qO- "https://github.com/LloydAsp/OsMutation/releases/expanded_assets/v0.0.1" | \
+    os_list=$(wget -qO- "https://github.com/mowwom/OvzReinstall/releases/expanded_assets/v0.0.1" | \
         sed -nE '/tar.gz/s/.*>([^<>]+)\.tar\.gz.*/\1/p' | \
         grep -E "(debian)|(centos)|(alpine)" )
     echo "$os_list" | nl
@@ -114,7 +114,7 @@ function read_openvz_template(){
     done
 
     os_selected=$( echo "$os_list" | head -n $os_index | tail -n 1)
-    download_link="https://github.com/LloydAsp/OsMutation/releases/download/${releasetag}/${os_selected}.tar.gz"
+    download_link="https://github.com/mowwom/OvzReinstall/releases/download/${releasetag}/${os_selected}.tar.gz"
 }
 
 function download_rootfs(){
@@ -205,6 +205,12 @@ function post_install(){
             apk add ifupdown-ng
             rc-update add networking default
             sed -i 's/--auto/-a/' /etc/init.d/networking # fix bug in networking script of lxc
+        fi
+    elif grep -qi ubuntu /etc/issue; then
+        install ssh
+        if [ "$cttype" == 'lxc' ] ; then
+            install ifupdown
+            systemctl disable systemd-networkd.service
         fi
     elif grep -qi debian /etc/issue; then
         install ssh
