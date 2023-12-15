@@ -1,4 +1,4 @@
-name: Download and Publish OsMutation v0.0.1 assets
+name: Download and Publish v0.0.1 assets
 
 on:
   workflow_dispatch:
@@ -13,14 +13,40 @@ jobs:
 
     - name: Download assets
       run: |
-        release_url="https://github.com/LloydAsp/OsMutation/releases/expanded_assets/v0.0.1"
-        assets=($(curl -s $release_url | grep -o -E "https://github\.com/LloydAsp/OsMutation/releases/download/v0\.0\.1/[^\"']+" | grep -v "/tag/"))
+        files=(
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/almalinux-8-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/almalinux-9-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.14-x86.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.14-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.15-x86.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.15-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.16-x86.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.16-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.17-x86.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.17-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.18-x86.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/alpine-3.18-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/centos-6-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/centos-7-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/centos-8-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/debian-10-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/debian-11-x86_64-minimal.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/debian-11-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/debian-12-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/debian-9.0-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/rockylinux-8-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/ubuntu-18.04-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/ubuntu-20.04-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/ubuntu-22.04-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/vzlinux-7-x86_64.tar.gz"
+          "https://github.com/LloydAsp/OsMutation/releases/download/v0.0.1/vzlinux-9-x86_64.tar.gz"
+        )
 
         mkdir ./downloaded_assets
         cd ./downloaded_assets
 
-        for asset_url in "${assets[@]}"; do
-          wget "$asset_url"
+        for file_url in "${files[@]}"; do
+          wget "$file_url"
         done
 
     - name: List downloaded assets
