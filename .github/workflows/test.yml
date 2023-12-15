@@ -1,0 +1,39 @@
+name: Download and Publish OsMutation v0.0.1 assets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download_and_publish_assets:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Download assets
+      run: |
+        release_url="https://github.com/LloydAsp/OsMutation/releases/tag/v0.0.1"
+        assets=($(curl -s $release_url | grep -o -E "https://github\.com/LloydAsp/OsMutation/releases/download/v0\.0\.1/[^\"']+" | grep -v "/tag/"))
+
+        mkdir ./downloaded_assets
+        cd ./downloaded_assets
+
+        for asset_url in "${assets[@]}"; do
+          wget "$asset_url"
+        done
+
+    - name: List downloaded assets
+      run: ls ./downloaded_assets
+
+    - name: Release and upload assets
+      uses: softprops/action-gh-release@v0.1.6
+      with:
+        name: Init and upload templates of openvz 7
+        tag_name: v0.0.1
+        draft: false
+        prerelease: false
+        files: |
+          ./downloaded_assets/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
