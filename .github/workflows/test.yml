@@ -13,7 +13,7 @@ jobs:
 
     - name: Download assets
       run: |
-        release_url="https://github.com/LloydAsp/OsMutation/releases/tag/v0.0.1"
+        release_url="https://github.com/LloydAsp/OsMutation/releases/expanded_assets/v0.0.1"
         assets=($(curl -s $release_url | grep -o -E "https://github\.com/LloydAsp/OsMutation/releases/download/v0\.0\.1/[^\"']+" | grep -v "/tag/"))
 
         mkdir ./downloaded_assets
