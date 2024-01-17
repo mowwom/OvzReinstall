@@ -19,7 +19,7 @@ jobs:
           server=http://images.linuxcontainers.org
           path=$(wget -qO- ${server}/meta/1.0/index-system | grep -v edge | grep default | awk '-F;' '(( $1=="ubuntu" || $1=="debian" || $1=="centos" || $1=="alpine") && ( $3=="amd64" || $3=="i386" || $3=="arm64")) {print $NF}')
           os_index=$(echo "$path" | wc -l)
-          os_list=$(echo "$path" | sed -E 's%/images/(.*)/default/.*/%\1%g' | sed 's%/%-%g')
+          os_list=$(echo "$path" | sed -E 's%/images/(.*)/default/.*/%\1%g' | sed 's%/%-%g' | sed -E 's/bionic/18.04/g; s/focal/20.04/g; s/jammy/22.04/g; s/lunar/23.04/g; s/mantic/23.10/g; s/xenial/16.04/g; s/bookworm/12/g; s/bullseye/11/g; s/buster/10/g; s/trixie/13-testing/g; s/sid/sid-unstable/g')
 
           mkdir ./publish
           cd ./publish
