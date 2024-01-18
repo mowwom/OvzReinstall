@@ -65,8 +65,8 @@ function read_lxc_template() {
             image_list="$(echo "$image_list" | grep -v arm64)"
         fi
 
-        os_list=$(echo "$image_list" | sed "s/https\:\/\/github.com\/mowwom\/OvzReinstall\/releases\/download\/${last_lxc_version}\///g" | sed "s/\.tar\.gz//g")
-        echo "$os_list" | nl
+        os_list=$(echo "$image_list" | sed -E 's%.*/([^/]+)-amd64-default-([^/]+)-images%\1-\2%g' | nl)
+        echo "$os_list"
 
         while [ -z "${os_index##*[!0-9]*}" ]; do
             echo -ne "\e[1;33mplease select os (input number):\e[m"
@@ -86,8 +86,8 @@ function read_lxc_template() {
             path="$(echo $path | grep -v arm64)"
         fi
 
-        os_list=$(echo "$path" | sed -E 's%/images/(.*)/default/.*/%\1%g' | sed 's%/%-%g')
-        echo "$os_list" | nl
+        os_list=$(echo "$path" | sed -E 's%/images/(.*)/default/.*/%\1%g' | sed 's%/%-%g' | nl)
+        echo "$os_list"
 
         while [ -z "${os_index##*[!0-9]*}" ]; do
             echo -ne "\e[1;33mplease select os (input number):\e[m"
@@ -96,12 +96,12 @@ function read_lxc_template() {
 
         if [ -z "$path" ]; then
             # Use default path and set os_selected based on user input
-            os_selected=$(echo "$os_list" | head -n $os_index | tail -n 1)
+            os_selected=$(echo "$os_list" | head -n $os_index | tail -n 1 | awk '{print $2}')
             download_link=${server}/${os_selected}/rootfs.tar.xz
         else
             # Use GitHub path and set download_link based on user input
             path=$(echo "$path" | head -n $os_index | tail -n 1)
-            os_selected=$(echo "$os_list" | head -n $os_index | tail -n 1)
+            os_selected=$(echo "$os_list" | head -n $os_index | tail -n 1 | awk '{print $2}')
             download_link=${server}/${path}/rootfs.tar.xz
         fi
     fi
