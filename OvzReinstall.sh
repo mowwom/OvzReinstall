@@ -55,11 +55,11 @@ function install(){
     $cmd2 "$@"
 }
 
-function read_lxc_template(){
+function read_lxc_template() {
     last_lxc_version=$(curl -Ls "https://api.github.com/repos/mowwom/OvzReinstall/releases/latest" | grep "LXC" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     if [[ -n $last_lxc_version ]]; then
         image_list=$(curl -Ls "https://api.github.com/repos/mowwom/OvzReinstall/releases/latest" | grep "LXC" | grep '"browser_download_url":' | sed -E 's/.*"([^"]+)".*/\1/')
-        if [ "$(uname -m)" == "aarch64" ] ; then
+        if [ "$(uname -m)" == "aarch64" ]; then
             image_list="$(echo "$image_list" | grep arm64)"
         else
             image_list="$(echo "$image_list" | grep -v arm64)"
@@ -80,13 +80,13 @@ function read_lxc_template(){
             grep -v edge | grep default | \
             awk '-F;' '(( $1=="ubuntu" || $1=="debian" || $1=="centos" || $1=="alpine") && ( $3=="amd64" || $3=="i386")) {print $NF}')
 
-        if [ "$(uname -m)" == "aarch64" ] ; then
+        if [ "$(uname -m)" == "aarch64" ]; then
             path="$(echo $path | grep arm64)"
         else
             path="$(echo $path | grep -v arm64)"
         fi
 
-        os_list=$( echo "$path" | sed -E 's%/images/(.*)/default/.*/%\1%g' | sed 's%/%-%g' )
+        os_list=$(echo "$path" | sed -E 's%/images/(.*)/default/.*/%\1%g' | sed 's%/%-%g')
         echo "$os_list" | nl
 
         while [ -z "${os_index##*[!0-9]*}" ]; do
@@ -94,9 +94,16 @@ function read_lxc_template(){
             read os_index < /dev/tty
         done
 
-        path=$( echo "$path" | head -n $os_index | tail -n 1)
-        os_selected=$(echo "$os_list" | head -n $os_index | tail -n 1 )
-        download_link=${server}/${path}/rootfs.tar.xz
+        if [ -z "$path" ]; then
+            # Use default path and set os_selected based on user input
+            os_selected=$(echo "$os_list" | head -n $os_index | tail -n 1)
+            download_link=${server}/${os_selected}/rootfs.tar.xz
+        else
+            # Use GitHub path and set download_link based on user input
+            path=$(echo "$path" | head -n $os_index | tail -n 1)
+            os_selected=$(echo "$os_list" | head -n $os_index | tail -n 1)
+            download_link=${server}/${path}/rootfs.tar.xz
+        fi
     fi
 }
 
